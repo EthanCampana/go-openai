@@ -12,8 +12,12 @@ jobs:
       - image: golang:1.18
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    working_directory: /go/src/github.com/EthanCampana/go-openai
     steps:
       - checkout
+      - run:
+          name: "installing golangci"
+          command: "go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1"
       - run:
           name: "linting"
           command: "golangci-lint run"
