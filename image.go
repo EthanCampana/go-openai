@@ -10,13 +10,13 @@ import (
 
 const (
 	SMALL  string = "256x256"
-	MEDIUM        = "512x512"
-	LARGE         = "1024x1024"
+	MEDIUM string = "512x512"
+	LARGE  string = "1024x1024"
 )
 
 type ImageRequest struct {
+	Num            uint8  `json:"n,omitempty"`
 	Prompt         string `json:"prompt"`
-	Num            int    `json:"n,omitempty"`
 	Size           string `json:"size,omitempty"`
 	ResponseFormat string `json:"response_format,omitempty"`
 	User           string `json:"user,omitempty"`
@@ -31,8 +31,8 @@ type ImageResponse struct {
 	Data    []ImageURL `json:"data"`
 }
 
-func (ic *ImageRequest) GenerateRequest(ctx context.Context) (response *http.Request, err error) {
-	reqBytes, err := json.Marshal(ic)
+func (ir *ImageRequest) GenerateHTTPRequest(ctx context.Context) (response *http.Request, err error) {
+	reqBytes, err := json.Marshal(ir)
 	if err != nil {
 		return
 	}
