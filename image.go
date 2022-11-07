@@ -1,4 +1,4 @@
-package go_openai
+package openai
 
 import (
 	"bytes"
@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	SMALL  string = "255x256"
-	MEDIUM        = "511x512"
-	LARGE         = "1023x1024"
+	SMALL  string = "256x256"
+	MEDIUM        = "512x512"
+	LARGE         = "1024x1024"
 )
 
 type ImageRequest struct {
@@ -22,17 +22,16 @@ type ImageRequest struct {
 	User           string `json:"user,omitempty"`
 }
 
-type ImageUrl struct {
-	Url string `json:"url"`
+type ImageURL struct {
+	URL string `json:"url"`
 }
 
 type ImageResponse struct {
 	Created int        `json:"created"`
-	Data    []ImageUrl `json:"data"`
+	Data    []ImageURL `json:"data"`
 }
 
 func (ic *ImageRequest) GenerateRequest(ctx context.Context) (response *http.Request, err error) {
-
 	reqBytes, err := json.Marshal(ic)
 	if err != nil {
 		return
@@ -44,5 +43,4 @@ func (ic *ImageRequest) GenerateRequest(ctx context.Context) (response *http.Req
 	}
 	req = req.WithContext(ctx)
 	return req, nil
-
 }
