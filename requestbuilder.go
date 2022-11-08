@@ -9,6 +9,20 @@ type RequestBuilder interface {
 	ReturnRequest() Request
 }
 
+/*
+Creates A RequestBuilder and Returns it.
+
+Params: builder -> Name of the builder you would like to Return
+
+RequestBuilders:
+
+- image
+
+- image-variation
+
+- image-edit
+.
+*/
 func (c *Client) GetRequestBuilder(builder string) RequestBuilder {
 	var b RequestBuilder
 	switch {
@@ -59,30 +73,34 @@ type ImageVariationRequestBuilder struct {
 // 	req *ImageEditRequest
 // }
 
+// Returns the Underlying Request of the Given RequestBuilder.
 func (ivrb ImageVariationRequestBuilder) ReturnRequest() Request {
-	ivrb.req.Num = ivrb.irb.req.Num
-	ivrb.req.Prompt = ivrb.irb.req.Prompt
-	ivrb.req.Size = ivrb.irb.req.Size
-	ivrb.req.ResponseFormat = ivrb.irb.req.ResponseFormat
-	ivrb.req.User = ivrb.irb.req.User
+	ivr := imageRequestToImageVariationRequest(ivrb.irb.req)
+	ivr.Image = ivrb.req.Image
+	ivr.ImagePath = ivrb.req.ImagePath
+	ivrb.req = ivr
 	return ivrb.req
 }
 
+// Sets the image to upload to upload of the underlying Request.
 func (ivrb *ImageVariationRequestBuilder) SetImage(filepath string) *ImageVariationRequestBuilder {
 	ivrb.req.ImagePath = filepath
 	ivrb.req.Image = strings.SplitAfter(filepath, "/")[len(strings.SplitAfter(filepath, "/"))-1]
 	return ivrb
 }
 
+// Returns the Underlying Request of the Given RequestBuilder.
 func (irb ImageRequestBuilder) ReturnRequest() Request {
 	return irb.req
 }
 
+// Sets the prompt of the underyling Request.
 func (irb *ImageRequestBuilder) SetPrompt(prompt string) *ImageRequestBuilder {
 	irb.req.Prompt = prompt
 	return irb
 }
 
+// Sets the ResponseFormat of the underlying Request.
 func (irb *ImageRequestBuilder) SetResponseFormat(rf string) *ImageRequestBuilder {
 	switch {
 	case rf == "url" || rf == "b64_json":
@@ -94,11 +112,15 @@ func (irb *ImageRequestBuilder) SetResponseFormat(rf string) *ImageRequestBuilde
 	return irb
 }
 
+// Sets the user of the underlying Request.
 func (irb *ImageRequestBuilder) SetUser(user string) *ImageRequestBuilder {
 	irb.req.User = user
 	return irb
 }
 
+// Sets the number of images to generate of the underlying Request.
+//
+// min=1, max=10, default=1.
 func (irb *ImageRequestBuilder) SetNumberOfPictures(num uint8) *ImageRequestBuilder {
 	if num > MaxImageRequest {
 		log.Println("[WARN] Num you provided is not accepted. Setting Num to 1")
@@ -108,6 +130,9 @@ func (irb *ImageRequestBuilder) SetNumberOfPictures(num uint8) *ImageRequestBuil
 	return irb
 }
 
+// Sets the size of the underlying Request
+//
+// SMALL = 256x256  MEDIUM = 512x512  LARGE = 1024x1024  Default = 256x265.
 func (irb *ImageRequestBuilder) SetSize(size string) *ImageRequestBuilder {
 	switch {
 	case size == SMALL:
@@ -123,22 +148,35 @@ func (irb *ImageRequestBuilder) SetSize(size string) *ImageRequestBuilder {
 	return irb
 }
 
+// Sets the size of the underlying Request
+//
+// SMALL = 256x256  MEDIUM = 512x512  LARGE = 1024x1024  Default = 256x265.
 func (ivrb *ImageVariationRequestBuilder) SetSize(size string) *ImageVariationRequestBuilder {
 	ivrb.irb.SetSize(size)
 	return ivrb
 }
+
+// Sets the number of images to generate of the underlying Request.
+//
+// min=1, max=10, default=1.
 func (ivrb *ImageVariationRequestBuilder) SetNumberOfPictures(num uint8) *ImageVariationRequestBuilder {
 	ivrb.irb.SetNumberOfPictures(num)
 	return ivrb
 }
+
+// Sets the user of the underlying Request.
 func (ivrb *ImageVariationRequestBuilder) SetUser(user string) *ImageVariationRequestBuilder {
 	ivrb.irb.SetUser(user)
 	return ivrb
 }
+
+// Sets the ResponseFormat of the underlying Request.
 func (ivrb *ImageVariationRequestBuilder) SetResponseFormat(rf string) *ImageVariationRequestBuilder {
 	ivrb.irb.SetResponseFormat(rf)
 	return ivrb
 }
+
+// Sets the prompt of the underyling Request.
 func (ivrb *ImageVariationRequestBuilder) SetPrompt(prompt string) *ImageVariationRequestBuilder {
 	ivrb.irb.SetPrompt(prompt)
 	return ivrb

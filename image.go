@@ -56,6 +56,7 @@ type ImageResponse struct {
 	Data    []ImageURL `json:"data"`
 }
 
+// Generates the correct http.Request object for the given API Request Struct.
 func (ir *ImageRequest) GenerateHTTPRequest(ctx context.Context) (response *http.Request, err error) {
 	reqBytes, err := json.Marshal(ir)
 	if err != nil {
@@ -70,6 +71,7 @@ func (ir *ImageRequest) GenerateHTTPRequest(ctx context.Context) (response *http
 	return req, nil
 }
 
+// Generates the correct http.Request object for the given API Request Struct.
 func (ivr *ImageVariationRequest) GenerateHTTPRequest(ctx context.Context) (response *http.Request, err error) {
 	var buff bytes.Buffer
 	buffW := multipart.NewWriter(&buff)
@@ -98,6 +100,7 @@ func (ivr *ImageVariationRequest) GenerateHTTPRequest(ctx context.Context) (resp
 	return req, nil
 }
 
+// Generates the correct http.Request object for the given API Request Struct.
 func (ier *ImageEditRequest) GenerateHTTPRequest(ctx context.Context) (response *http.Request, err error) {
 	var buff bytes.Buffer
 	buffW := multipart.NewWriter(&buff)
