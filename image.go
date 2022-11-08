@@ -68,6 +68,7 @@ func (ir *ImageRequest) GenerateHTTPRequest(ctx context.Context) (response *http
 		return nil, err
 	}
 	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	return req, nil
 }
 
@@ -97,6 +98,7 @@ func (ivr *ImageVariationRequest) GenerateHTTPRequest(ctx context.Context) (resp
 		return nil, err
 	}
 	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "multipart/form-data")
 	return req, nil
 }
 
@@ -138,5 +140,6 @@ func (ier *ImageEditRequest) GenerateHTTPRequest(ctx context.Context) (response 
 		return nil, err
 	}
 	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "multipart/form-data")
 	return req, nil
 }
