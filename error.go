@@ -1,6 +1,6 @@
 package openai
 
-type ApiErrorResponse struct {
+type APIErrorResponse struct {
 	Error *struct {
 		Code    *int    `json:"code,omitempty"`
 		Message string  `json:"message"`

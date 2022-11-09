@@ -52,7 +52,7 @@ func (c *Client) setHeaders(r *http.Request) *http.Request {
 func checkResponse(resp *http.Response) error {
 	defer resp.Body.Close()
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
-		var errResp ApiErrorResponse
+		var errResp APIErrorResponse
 		err := json.NewDecoder(resp.Body).Decode(&errResp)
 		if err != nil || errResp.Error == nil {
 			return fmt.Errorf("error, status code: %d", resp.StatusCode)
@@ -101,20 +101,71 @@ func (c *Client) ListModels(ctx context.Context) (Models, error) {
 		return res, err
 	}
 	req = req.WithContext(ctx)
-	resp, err := c.httpClient.Do(c.setHeaders(req))
+	err = c.SendRequest(req, res)
 	if err != nil {
-		return res, err
-	}
-	if err = checkResponse(resp); err != nil {
-		return res, err
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-	if err = json.Unmarshal(body, &res); err != nil {
 		return res, err
 	}
 	return res, nil
+}
+
+// Sends an HttpRequest to the OpenAI API and Loads information into the buffer that is passed.
+func (c *Client) SendRequest(req *http.Request, a interface{}) error {
+	res, err := c.httpClient.Do(c.setHeaders(req))
+	if err != nil {
+		return err
+	}
+	if err = checkResponse(res); err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	if err = json.Unmarshal(body, &a); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Utilizes the CreateImage OpenAI API  to generate Art based on the Request parameters.
+//
+// @Returns openai.ImageResponse.
+func (c *Client) CreateImage(ctx context.Context, imgReq Request) (ImageResponse, error) {
+	var imgRes ImageResponse
+	var req *http.Request
+	var err error
+	switch i := imgReq.(type) {
+	case *ImageRequest:
+		req, err = i.GenerateHTTPRequest(ctx)
+	case *ImageVariationRequest:
+		req, err = i.GenerateHTTPRequest(ctx)
+	case *ImageEditRequest:
+		req, err = i.GenerateHTTPRequest(ctx)
+	default:
+		// TODO: Create an Error that lets the user know that this Request is not accepted by this API
+		return imgRes, nil
+	}
+	if err != nil {
+		return imgRes, err
+	}
+	err = c.SendRequest(req, imgRes)
+	if err != nil {
+		return imgRes, err
+	}
+	return imgRes, err
+}
+
+// Utilizes the CreateImageVariation OpenAI API to generate Art based on the Request parameters.
+//
+// @Returns openai.ImageResponse.
+func (c *Client) CreateImageVariation(ctx context.Context, imgVarReq *ImageVariationRequest) (ImageResponse, error) {
+	return c.CreateImage(ctx, imgVarReq)
+}
+
+// Utilizes the CreateImageEdit OpenAI API to generate Art based on the Request parameters.
+//
+// @Returns openai.ImageResponse.
+func (c *Client) CreateImageEidt(ctx context.Context, imgEditReq *ImageEditRequest) (ImageResponse, error) {
+	return c.CreateImage(ctx, imgEditReq)
 }

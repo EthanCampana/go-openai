@@ -29,11 +29,11 @@ func main() {
 	ctx := context.Background()
     rb := openai.GetRequestBuilder("image").(*openai.ImageRequestBuilder)
     res := c.CreateImage(
-        ctx,
+        ctx ,
         rb.SetPrompt("A Chicken With Glasses, Digtal Art").
-           SetNumberOfPictures(3).
-           SetSize(oa.LARGE).
-           ReturnRequest()
+            SetNumberOfPictures(3).
+            SetSize(oa.LARGE).
+            ReturnRequest()
     )
     fmt.Println(res.data[0].url)
 }
@@ -52,11 +52,11 @@ func main() {
 	c := openai.GetClient("your token")
 	ctx := context.Background()
     req := &openai.ImageRequest{
-			Num:            3,
-			Prompt:         "A Chicken With Glasses, Digtal Art",
-			Size:           oa.LARGE,
-			ResponseFormat: "url",
-			User:           "",
+        Num:            3,
+        Prompt:         "A Chicken With Glasses, Digtal Art",
+        Size:           oa.LARGE,
+        ResponseFormat: "url",
+        User:           "",
         
     }
     res := c.CreateImage(ctx,req)
@@ -64,7 +64,7 @@ func main() {
 }
 ```
 
-Both would get the same result. The RequestBuilder struct builds out the requests for you with safeguards in place so that you don't send out a bad request!
+Both would get the same result. The RequestBuilder struct builds out the requests for you with safeguards in place so that you don't send out a bad requests!
 
 ### Request Builders
 - image
