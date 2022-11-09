@@ -27,7 +27,7 @@ import (
 func main() {
 	c := openai.GetClient("your token")
 	ctx := context.Background()
-    rb := openai.GetRequestBuilder("image").(*openai.ImageRequestBuilder)
+    rb := openai.GetRequestBuilder("image").(openai.ImageRequestBuilder)
     res := c.CreateImage(
         ctx ,
         rb.SetPrompt("A Chicken With Glasses, Digtal Art").
