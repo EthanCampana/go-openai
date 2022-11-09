@@ -143,8 +143,7 @@ func (c *Client) CreateImage(ctx context.Context, imgReq Request) (ImageResponse
 	case *ImageEditRequest:
 		req, err = i.GenerateHTTPRequest(ctx)
 	default:
-		// TODO: Create an Error that lets the user know that this Request is not accepted by this API
-		return imgRes, nil
+		return imgRes, fmt.Errorf("got unsupported request type %T", imgReq)
 	}
 	if err != nil {
 		return imgRes, err

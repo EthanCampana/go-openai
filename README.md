@@ -73,7 +73,7 @@ Both would get the same result. The RequestBuilder struct builds out the request
 
 example usage
 ```go
-    openai.GetRequestBuilder("image").(*openai.ImageRequestBuilder)
-    openai.GetRequestBuilder("image-variation").(*openai.ImageVariationRequestBuilder)
-    openai.GetRequestBuilder("image-edit").(*openai.ImageEditRequestBuilder)
+    openai.GetRequestBuilder("image").(openai.ImageRequestBuilder)
+    openai.GetRequestBuilder("image-variation").(openai.ImageVariationRequestBuilder)
+    openai.GetRequestBuilder("image-edit").(openai.ImageEditRequestBuilder)
 ```
