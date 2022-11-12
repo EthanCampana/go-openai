@@ -72,19 +72,8 @@ func (c *Client) GetModel(ctx context.Context, model string) (Model, error) {
 		return res, err
 	}
 	req = req.WithContext(ctx)
-	resp, err := c.httpClient.Do(c.setHeaders(req))
+	err = c.SendRequest(req, &res)
 	if err != nil {
-		return res, err
-	}
-	defer resp.Body.Close()
-	if err = checkResponse(resp); err != nil {
-		return res, err
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-	if err = json.Unmarshal(body, &res); err != nil {
 		return res, err
 	}
 	return res, nil
@@ -100,7 +89,7 @@ func (c *Client) ListModels(ctx context.Context) (Models, error) {
 		return res, err
 	}
 	req = req.WithContext(ctx)
-	err = c.SendRequest(req, res)
+	err = c.SendRequest(req, &res)
 	if err != nil {
 		return res, err
 	}
@@ -121,7 +110,7 @@ func (c *Client) SendRequest(req *http.Request, a interface{}) error {
 	if err != nil {
 		return err
 	}
-	if err = json.Unmarshal(body, &a); err != nil {
+	if err = json.Unmarshal(body, a); err != nil {
 		return err
 	}
 	return nil
@@ -147,7 +136,7 @@ func (c *Client) CreateImage(ctx context.Context, imgReq Request) (ImageResponse
 	if err != nil {
 		return imgRes, err
 	}
-	err = c.SendRequest(req, imgRes)
+	err = c.SendRequest(req, &imgRes)
 	if err != nil {
 		return imgRes, err
 	}
