@@ -50,7 +50,6 @@ func (c *Client) setHeaders(r *http.Request) *http.Request {
 }
 
 func checkResponse(resp *http.Response) error {
-	defer resp.Body.Close()
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
 		var errResp APIErrorResponse
 		err := json.NewDecoder(resp.Body).Decode(&errResp)
@@ -77,10 +76,10 @@ func (c *Client) GetModel(ctx context.Context, model string) (Model, error) {
 	if err != nil {
 		return res, err
 	}
+	defer resp.Body.Close()
 	if err = checkResponse(resp); err != nil {
 		return res, err
 	}
-	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return res, err
