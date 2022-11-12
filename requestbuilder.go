@@ -140,7 +140,7 @@ func (irb ImageRequestBuilder) ReturnRequest() Request {
 	return irb.Req
 }
 
-// Sets the prompt of the underyling Request.
+// Sets the prompt of the underlying Request.
 func (irb *ImageRequestBuilder) SetPrompt(prompt string) *ImageRequestBuilder {
 	irb.Req.Prompt = prompt
 	return irb
@@ -222,7 +222,7 @@ func (ivrb *ImageVariationRequestBuilder) SetResponseFormat(rf string) *ImageVar
 	return ivrb
 }
 
-// Sets the prompt of the underyling Request.
+// Sets the prompt of the underlying Request.
 func (ivrb *ImageVariationRequestBuilder) SetPrompt(prompt string) *ImageVariationRequestBuilder {
 	ivrb.Irb.SetPrompt(prompt)
 	return ivrb
@@ -256,7 +256,7 @@ func (ierb *ImageEditRequestBuilder) SetResponseFormat(rf string) *ImageEditRequ
 	return ierb
 }
 
-// Sets the prompt of the underyling Request.
+// Sets the prompt of the underlying Request.
 func (ierb *ImageEditRequestBuilder) SetPrompt(prompt string) *ImageEditRequestBuilder {
 	ierb.Irb.SetPrompt(prompt)
 	return ierb

@@ -1,5 +1,7 @@
 # go-openai
-[OpenAI-GPT3](https://beta.openai.com/) OpenAI API wrapper for Go
+[![Go Report Card](https://goreportcard.com/badge/github.com/EthanCampana/go-openai)](https://goreportcard.com/report/github.com/EthanCampana/go-openai) 
+
+[OpenAI-GPT3](https://beta.openai.com/) Unofficial OpenAI API wrapper for Go
 
 Checkout [go-gpt3](https://github.com/sashabaranov/go-gpt3)  API wrapper, If this one does not fit your needs
 
