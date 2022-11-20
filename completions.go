@@ -1,5 +1,13 @@
 package openai
 
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
 type CompletionRequest[T string | []string] struct {
 	LogitBias        map[string]int16 `json:"logit_bias,omitempty"`
 	Model            string           `json:"model"`
@@ -33,4 +41,20 @@ type CompletionResponse struct {
 	Model   string           `json:"model"`
 	Choices []ChoiceResponse `json:"choices"`
 	Usage   Usage            `json:"usage"`
+}
+
+// Generates the correct http.Request object for the given API Request Struct.
+func (cr *CompletionRequest[T]) GenerateHTTPRequest(ctx context.Context) (response *http.Request, err error) {
+	reqBytes, err := json.Marshal(cr)
+	if err != nil {
+		return nil, err
+	}
+	url := fmt.Sprintf("%s/%s", apiURL, "/completions")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBytes))
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	return req, nil
 }
