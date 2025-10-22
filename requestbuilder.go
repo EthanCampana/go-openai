@@ -22,11 +22,40 @@ RequestBuilders:
 - image-variation
 
 - image-edit
-.
+
+- completion / completion-A (for string Array Variant).
+
 */
 func (c *Client) GetRequestBuilder(builder string) RequestBuilder {
 	var b RequestBuilder
 	switch {
+	case builder == "completion-A":
+		cr := &CompletionRequest[[]string]{
+			Model:            "text-davinci-002",
+			Prompt:           []string{"<|endoftext|>"},
+			MaxTokens:        MaxTokensDefault,
+			TopP:             1,
+			N:                1,
+			Stream:           false,
+			Echo:             false,
+			PresencePenalty:  0,
+			FrequencePenalty: 0,
+		}
+		b = CompletionRequestBuilder[[]string]{Req: cr}
+	case builder == "completion":
+		cr := &CompletionRequest[string]{
+			Model:            "text-davinci-002",
+			Prompt:           "<|endoftext|>",
+			MaxTokens:        MaxTokensDefault,
+			TopP:             1,
+			N:                1,
+			Stream:           false,
+			Echo:             false,
+			PresencePenalty:  0,
+			FrequencePenalty: 0,
+		}
+		b = CompletionRequestBuilder[string]{Req: cr}
+
 	case builder == "image":
 		imgreq := &ImageRequest{
 			Num:            1,
@@ -86,7 +115,8 @@ func imageRequestToImageEditRequest(ivr *ImageRequest) *ImageEditRequest {
 }
 
 const (
-	MaxImageRequest = 10
+	MaxImageRequest  = 10
+	MaxTokensDefault = 16
 )
 
 type ImageRequestBuilder struct{ Req *ImageRequest }
@@ -103,6 +133,12 @@ type ImageEditRequestBuilder struct {
 	ImagePath string
 	Mask      string
 	MaskPath  string
+}
+
+type CompletionRequestBuilder[T string | []string] struct{ Req *CompletionRequest[T] }
+
+func (crb CompletionRequestBuilder[T]) ReturnRequest() Request {
+	return crb.Req
 }
 
 func (ierb ImageEditRequestBuilder) ReturnRequest() Request {
@@ -274,4 +310,95 @@ func (ierb *ImageEditRequestBuilder) SetMask(filepath string) *ImageEditRequestB
 	ierb.MaskPath = filepath
 	ierb.Mask = strings.SplitAfter(filepath, "/")[len(strings.SplitAfter(filepath, "/"))-1]
 	return ierb
+}
+
+func (crb *CompletionRequestBuilder[T]) SetStop(stop T) *CompletionRequestBuilder[T] {
+	crb.Req.Stop = stop
+	return crb
+}
+
+func (crb *CompletionRequestBuilder[T]) SetPrompt(prompt T) *CompletionRequestBuilder[T] {
+	if len(prompt) == 0 {
+		log.Println("[WARN] You Provided an empty Prompt")
+	}
+	crb.Req.Prompt = prompt
+	return crb
+}
+
+func (crb *CompletionRequestBuilder[T]) SetModel(model string) *CompletionRequestBuilder[T] {
+	crb.Req.Model = model
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetUser(user string) *CompletionRequestBuilder[T] {
+	crb.Req.User = user
+	return crb
+}
+
+func (crb *CompletionRequestBuilder[T]) SetSuffix(suffix string) *CompletionRequestBuilder[T] {
+	crb.Req.Suffix = suffix
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetMaxTokens(max uint8) *CompletionRequestBuilder[T] {
+	crb.Req.MaxTokens = max
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetN(n uint8) *CompletionRequestBuilder[T] {
+	crb.Req.N = n
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetStream(stream bool) *CompletionRequestBuilder[T] {
+	crb.Req.Stream = stream
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetEcho(echo bool) *CompletionRequestBuilder[T] {
+	crb.Req.Echo = echo
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetBestOf(num uint8) *CompletionRequestBuilder[T] {
+	crb.Req.BestOf = num
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetLogitBias(bias map[string]int16) *CompletionRequestBuilder[T] {
+	crb.Req.LogitBias = bias
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetPresencePenalty(val float32) *CompletionRequestBuilder[T] {
+	if val > 2 || val < -2.0 {
+		log.Println("[WARN] You set a Presence Pentalty outside of the allowed range. Setting to 0")
+		crb.Req.PresencePenalty = 0
+	}
+	crb.Req.PresencePenalty = val
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetFrequencyPenalty(val float32) *CompletionRequestBuilder[T] {
+	if val > 2 || val < -2.0 {
+		log.Println("[WARN] You set a Frequency Pentalty outside of the allowed range. Setting to 0")
+		crb.Req.FrequencePenalty = 0
+	}
+	crb.Req.FrequencePenalty = val
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetLogProbs(num uint8) *CompletionRequestBuilder[T] {
+	if num == 0 {
+		log.Println("[WARN] setting logprobs to 0 is unecessary leaving the value to nil.")
+		return crb
+	}
+	crb.Req.Logprobs = num
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetTemperature(temp float32) *CompletionRequestBuilder[T] {
+	crb.Req.Temperature = temp
+	if temp > 1 {
+		log.Println("[WARN] You Provided a Temperature beyond 1, setting value back to 1")
+		crb.Req.Temperature = 1
+	}
+	return crb
+}
+func (crb *CompletionRequestBuilder[T]) SetTopP(top float32) *CompletionRequestBuilder[T] {
+	crb.Req.TopP = top
+	if top > 1 {
+		log.Println("[WARN] You Provided a Temperature beyond 1, setting value back to 1")
+		crb.Req.TopP = 1
+	}
+	return crb
 }

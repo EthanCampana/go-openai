@@ -365,6 +365,23 @@ func TestClient_GetRequestBuilder(t *testing.T) {
 				MaskPath:  "",
 			},
 		},
+		{
+			name: "Get CompletionRequestBuilder Struct",
+			args: args{builder: "completion"},
+			want: CompletionRequestBuilder[string]{
+				Req: &CompletionRequest[string]{
+					Model:            "text-davinci-002",
+					Prompt:           "<|endoftext|>",
+					MaxTokens:        MaxTokensDefault,
+					TopP:             1,
+					N:                1,
+					Stream:           false,
+					Echo:             false,
+					PresencePenalty:  0,
+					FrequencePenalty: 0,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

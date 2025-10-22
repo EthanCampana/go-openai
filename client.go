@@ -156,3 +156,56 @@ func (c *Client) CreateImageVariation(ctx context.Context, imgVarReq *ImageVaria
 func (c *Client) CreateImageEidt(ctx context.Context, imgEditReq *ImageEditRequest) (ImageResponse, error) {
 	return c.CreateImage(ctx, imgEditReq)
 }
+
+func (c *Client) CreateCompletionArr(
+	ctx context.Context,
+	compReq *CompletionRequest[[]string],
+) (CompletionResponse, error) {
+	var compRes CompletionResponse
+	req, err := compReq.GenerateHTTPRequest(ctx)
+	if err != nil {
+		return compRes, err
+	}
+
+	res, err := c.httpClient.Do(c.setHeaders(req))
+	if err != nil {
+		return compRes, err
+	}
+	if err = checkResponse(res); err != nil {
+		return compRes, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return compRes, err
+	}
+	if err = json.Unmarshal(body, &compRes); err != nil {
+		return compRes, err
+	}
+	return compRes, nil
+}
+
+func (c *Client) CreateCompletion(ctx context.Context, compReq *CompletionRequest[string]) (CompletionResponse, error) {
+	var compRes CompletionResponse
+	req, err := compReq.GenerateHTTPRequest(ctx)
+	if err != nil {
+		return compRes, err
+	}
+
+	res, err := c.httpClient.Do(c.setHeaders(req))
+	if err != nil {
+		return compRes, err
+	}
+	if err = checkResponse(res); err != nil {
+		return compRes, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return compRes, err
+	}
+	if err = json.Unmarshal(body, &compRes); err != nil {
+		return compRes, err
+	}
+	return compRes, nil
+}
